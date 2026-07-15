@@ -14,6 +14,12 @@ public class PlayerState
     
     public List<CardInstance> Hand = new List<CardInstance>();
     public List<DiceInstance> DicePool = new List<DiceInstance>();
+    public DiceRoller DiceRoller;
+    
+    public PlayerState(DiceRoller roller = null)
+    {
+        DiceRoller = roller ?? new DiceRoller();
+    }
     
     public void TakeDamage(int damage)
     {
@@ -42,9 +48,13 @@ public class PlayerState
         return Energy >= card.Data.EnergyCost && AvailableDiceCount() >= card.Data.DiceCost;
     }
     
+    public void ConsumeEnergy(int amount)
+    {
+        Energy -= amount;
+    }
+    
     public void PlayCard(CardInstance card)
     {
-        Energy -= card.Data.EnergyCost;
         Hand.Remove(card);
     }
     
@@ -65,7 +75,7 @@ public class PlayerState
         {
             if (!dice.IsConsumed)
             {
-                dice.RollAndConsume();
+                dice.RollAndConsume(DiceRoller);
                 return dice;
             }
         }

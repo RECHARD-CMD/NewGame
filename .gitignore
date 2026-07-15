@@ -11,3 +11,6 @@ obj/
 # IDE/local caches
 .vs/
 .idea/
+
+# Godot CSV import generated translation resources
+data/**/*.translation

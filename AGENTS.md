@@ -31,6 +31,42 @@
 
 玩家每次出牌都在消耗自己的防御资源，并可能消耗未知骰子；需要在输出、状态构筑、保留能量防御和赌骰收益之间做取舍。
 
+## 0.2 当前战斗演出核心
+
+战斗演出必须服务于当前核心循环：
+
+```text
+卡牌决定“做什么”
+骰子决定“强度”
+Energy 决定“代价与生存”
+```
+
+骰子不是单纯随机数，而是能量生命释放力量的媒介。需要骰子的卡牌在打出时自动消耗未揭示骰子，骰子旋转代表能量积蓄，骰面锁定的瞬间应成为攻击、技能或状态效果命中的关键反馈点。
+
+当前演出流程应按以下事件点设计：
+
+1. 出牌确认。
+2. 扣除 Energy。
+3. 消耗未揭示骰子。
+4. 骰子旋转 / 蓄力。
+5. 骰面锁定。
+6. 技能形态生成。
+7. 敌方核心命中。
+8. 伤害、护盾、状态和核心裂纹反馈。
+9. 结算完成，玩家继续决策。
+
+不要把“骰子停止击中核心”做成脱离玩法的孤立特效。它应当是卡牌结算、骰点揭示和敌方核心受击反馈的统一高潮。
+
+普通卡牌优先采用三层组合演出：
+
+1. 骰子通用动画：投掷、旋转、停止、高低点反馈。
+2. 拟态职业动画：能量刃、守护冲击、数据洪流、空间裂缝等。
+3. 卡牌特殊演出：只给关键卡、终极卡、Boss 击杀或剧情卡使用。
+
+表现字段，例如 `animation_key`、`mimic_style`、`dice_vfx_key`、`hit_vfx_key`、`impact_level`，只驱动视觉和音频表现，不得改变战斗结算规则。
+
+当前阶段可以先用日志、闪白、震动、骰子数字变化、核心色块和伤害数字验证节奏，不因缺少正式美术阻塞战斗闭环。
+
 ## 1. 最终工作栈
 
 ### 1.1 设计与叙事
@@ -85,6 +121,91 @@
 9. 合并到 `develop`。
 
 如果某一步暂时无法完成，必须在对应 Markdown 规格或提交说明中写明原因、风险和后续补齐方式。
+
+### 2.1 并行开发规则
+
+当前项目允许并行开发，但必须避免多个线程同时修改核心战斗结算。
+
+核心原则：
+
+1. 战斗核心规则只能有一个实现来源。
+2. 训练场和正式战斗都必须调用同一套 `BattleManager`、`DiceRoller`、`PlayerState`、`EnemyState`、`CardData` 和状态结算逻辑。
+3. 不允许为了训练场、正式 demo、测试场景或 UI 临时复制一套伤害、骰子或 Energy 承伤规则。
+4. 并行任务开始前，应先确认接口文档或 Markdown 规格。
+5. 每个分支尽量只修改自己负责的目录。
+6. 合并前必须说明是否运行 Godot、是否通过训练场测试、是否影响正式战斗流程。
+
+推荐第一轮并行线程：
+
+- A：`battle-core`，负责正式战斗内核。
+- B：`training-ground`，负责训练场 UI、调试配置和日志。
+- C：`cards-v0-design`，负责第一批测试卡牌设计文档和数据表。
+- D：`battle-log-and-tests`，负责日志格式和测试用例文档。
+
+暂缓第二轮线程：
+
+- `battle-demo-flow`
+- `reward-scene`
+- `tavern-basic`
+- `placeholder-art`
+
+等训练场、核心战斗、卡牌 v0 和测试文档稳定后，再进入第二轮。
+
+推荐分支：
+
+```text
+docs/battle-contract
+feature/battle-core
+feature/training-ground
+feature/card-data-v0
+docs/battle-log-and-tests
+art/placeholder-ui
+```
+
+建议合并顺序：
+
+```text
+docs/battle-contract
+→ feature/battle-core
+→ feature/training-ground
+→ feature/card-data-v0
+→ docs/battle-log-and-tests
+```
+
+目录边界：
+
+```text
+线程 A battle-core:
+  scripts/battle/
+  scripts/core/
+  scripts/cards/
+  scripts/dice/
+  scripts/enemies/
+  scripts/statuses/
+
+线程 B training-ground:
+  scenes/training/
+  scripts/training/
+  scripts/ui/BattleLogPanel.cs
+
+线程 C cards-v0-design:
+  docs/design/
+  docs/balance/
+  data/cards/
+  data/statuses/
+
+线程 D battle-log-and-tests:
+  docs/specs/
+  docs/tests/
+```
+
+禁止事项：
+
+- 训练场线程不要实现自己的 DamageResolver。
+- 实战 demo 线程不要实现自己的骰子结算。
+- 卡牌设计线程不要直接改核心代码。
+- 美术/UI 线程不要为了显示效果修改战斗规则。
+- 核心战斗线程不要顺手重做训练场 UI。
 
 ## 3. 推荐目录结构
 
@@ -257,6 +378,23 @@ CSV/XLSX 用于稳定、可批量编辑的数据，例如：
 - UI 文字应保证可读性，不强制全部低分辨率像素化。
 - 不在核心玩法未验证前投入复杂 3D 后处理、实时描边或像素化 shader。
 
+### 5.5.1 分辨率与 UI 适配
+
+当前设计基准分辨率为 `1280x720`。项目应优先保证 720p 下可用，并从一开始避免把正式 UI 锁死在单一分辨率。
+
+UI 规则：
+
+- 正式 UI 优先使用 `Control` 根节点。
+- 优先使用 `HBoxContainer`、`VBoxContainer`、`MarginContainer`、`PanelContainer`、`GridContainer`、`SplitContainer` 等容器管理布局。
+- 不要依赖大量绝对坐标手摆 UI。
+- 允许给控件设置 `custom_minimum_size`，但位置和伸缩应尽量交给容器、锚点和 size flags。
+- 训练场属于 Debug UI，可以先粗糙，但仍应逐步改为左配置、中战斗、右日志的容器化三栏布局。
+- 正式 BattleScene、RewardScene、TavernScene 从一开始就应按容器布局实现。
+- 文字应使用字体和 Label/RichTextLabel，不要把文字做进图片。
+- 720p、1080p、2K、4K 不应各做一套 UI；应通过 stretch、容器和字体/尺寸策略适配。
+
+当前项目 stretch 策略以 `project.godot` 为准。修改 stretch 设置前，必须说明原因并验证训练场和战斗场景。
+
 ### 5.6 数据模型规范
 
 当前 demo 至少包含以下运行时概念：
@@ -284,7 +422,10 @@ CSV/XLSX 用于稳定、可批量编辑的数据，例如：
 - 需要骰子的卡牌还要检查是否有未消耗骰子。
 - 检查通过后，系统消耗 Energy，并自动消耗最左侧可用骰子。
 - 被消耗的骰子在打出瞬间掷出，骰点用于结算卡牌效果。
+- 骰子掷出与锁定应作为战斗演出的关键事件点：骰面锁定后再展示技能命中、伤害数字、护盾碎裂和状态变化。
 - 骰点影响结算结果，不应导致卡牌完全无效果；低点应有基础效果，高点可触发额外奖励。
+- 如果卡牌描述为“造成伤害，并在骰点满足条件时施加状态”，默认结算顺序是先造成本次伤害，再施加状态；新施加的状态不应被本次攻击立即消耗。
+- 当前 demo 中，破甲不在每次受击后减少；破甲在敌人回合结束时减少 1 层。
 - 当前 demo 不做手动选骰、拖拽绑骰或提前显示骰点。
 - 不能打出的卡牌仍应允许单击预览，但双击时不应结算。
 
@@ -521,6 +662,60 @@ voice_character_lineid_v001.wav
 6. 先不实现完整洗牌、奖励、酒馆、队友。
 7. 当单张卡牌、自动消耗未揭示骰、单个敌人的战斗能跑通后，再扩展 Deck、Status、Reward、Tavern。
 
+### 10.1 训练场与调试工具
+
+当前阶段允许优先实现 `TrainingGroundScene`，中文名为“训练场”，用于验证战斗系统、卡牌效果、骰子结算、状态结算和 Energy/HP 承伤规则。
+
+训练场不是正式关卡、不是爬塔节点、不是正式游戏流程的一部分。它是 Debug 场景，可以在开发阶段临时作为主场景。
+
+训练场可以包含：
+
+1. `BattleLogPanel`：显示战斗结算日志。
+2. `TrainingDummy`：不行动、高 HP 的稻草人，用于测试卡牌、骰子和伤害。
+3. `TrainingBeast`：固定每回合攻击的测试敌人，用于测试 Energy 承伤和 HP 承伤。
+4. 玩家参数修改：HP、Energy、Energy Regen、骰子数量、骰子面数。
+5. 敌人参数修改：HP、Attack、Intent。
+6. 掷骰模式修改：Random 或 Fixed，用于稳定测试骰点触发效果。
+7. 重置战斗、结束回合、切换测试敌人等 Debug 按钮。
+
+训练场第一版必须优先支持：
+
+- 显示战斗日志。
+- 切换 `TrainingDummy` 和 `TrainingBeast`。
+- 修改玩家 HP、Energy、骰子数量、骰子面数。
+- 修改掷骰模式：Random / Fixed。
+- Fixed 模式下可以设置固定点数。
+- 重置战斗。
+- 使用当前已有测试卡：`EnergyStrike` 和 `BreakCore`。
+- 验证 BreakCore 高骰点施加破甲；后续攻击应获得破甲伤害加成，但破甲层数在敌人回合结束时减少 1 层。
+- 为后续战斗演出预留事件点：出牌确认、骰子旋转、骰面锁定、敌方核心命中、伤害/状态显示、结算完成。
+
+训练场第一版暂不实现：
+
+- 完整卡牌选择器。
+- 完整状态编辑器。
+- 完整队友编辑器。
+- 完整敌人 AI 编辑器。
+- 完整奖励编辑器。
+- 导出测试报告。
+- 录像回放。
+- 正式美术。
+
+训练场可以调用正式战斗系统，但不得把训练场专用 UI、按钮、参数输入、固定骰点设置和测试敌人切换逻辑混入正式战斗规则。需要 Debug 注入时，应通过独立的训练场控制器、配置对象或骰子滚动器完成。
+
+建议结构：
+
+```text
+scenes/training/TrainingGroundScene.tscn
+scripts/training/TrainingGroundController.cs
+scripts/training/TrainingConfig.cs
+scripts/training/TrainingEnemyFactory.cs
+scripts/ui/BattleLogPanel.cs
+scripts/battle/DiceRoller.cs
+```
+
+如果实现 `DiceRoller`，正式游戏默认使用 Random，训练场可以切换到 Fixed。Fixed 点数必须 clamp 到 `1..diceSides`。
+
 ## 11. 禁止或谨慎事项
 
 - 不要在没有规格的情况下直接扩展大系统。
@@ -529,6 +724,7 @@ voice_character_lineid_v001.wav
 - 不要手动编辑 Godot 自动生成的 `.import` 文件，除非明确知道原因。
 - 不要提交 `.godot/` 缓存目录。
 - 不要在战斗闭环验证前优先投入完整爬塔、完整职业、实时 3D 角色或复杂 shader。
+- 不要把训练场专用逻辑写进正式战斗规则；训练场只能作为调试壳调用正式系统。
 - 不要把大型二进制文件直接放入普通 Git 历史，应使用 Git LFS。
 - 不要删除或覆盖用户未确认的工作成果。
 

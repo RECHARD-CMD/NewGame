@@ -1,0 +1,2 @@
+id,name,description,stack_behavior,duration_type,effect_type,effect_value,consume_on_attack,consume_on_turn_end
+vulnerable,破甲,敌人每层破甲使受到的攻击伤害 +1。敌人回合结束时破甲减少 1 层。,叠加,永久,伤害加成,1,false,true

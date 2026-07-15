@@ -7,6 +7,7 @@ public partial class BattleUI : Control
     private Label _playerEnergyLabel;
     private Label _enemyHpLabel;
     private Label _enemyIntentLabel;
+    private Label _enemyVulnerableLabel;
     private Label _turnLabel;
     private Label _battleResultLabel;
     private ColorRect _cardPreviewBackground;
@@ -26,6 +27,7 @@ public partial class BattleUI : Control
         _playerEnergyLabel = GetNode<Label>("TopPanel/PlayerStatus/PlayerEnergyLabel");
         _enemyHpLabel = GetNode<Label>("TopPanel/EnemyStatus/EnemyHpLabel");
         _enemyIntentLabel = GetNode<Label>("TopPanel/EnemyStatus/EnemyIntentLabel");
+        _enemyVulnerableLabel = GetNode<Label>("TopPanel/EnemyStatus/EnemyVulnerableLabel");
         _turnLabel = GetNode<Label>("TopPanel/TurnLabel");
         _battleResultLabel = GetNode<Label>("BattleResultLabel");
         _cardPreviewBackground = GetNode<ColorRect>("CardPreviewBackground");
@@ -61,9 +63,14 @@ public partial class BattleUI : Control
         _endTurnButton.Disabled = true;
     }
     
-    public void OnCardPlayed(string cardId, int damage, int diceResult)
+    public void OnCardPlayed(string cardId, int damage, int diceResult, int vulnerableAdded)
     {
-        _battleResultLabel.Text = $"{cardId} 掷出 {diceResult}，造成 {damage} 伤害";
+        string resultText = $"{cardId} 掷出 {diceResult}，造成 {damage} 伤害";
+        if (vulnerableAdded > 0)
+        {
+            resultText += $"\n施加 {vulnerableAdded} 层破甲";
+        }
+        _battleResultLabel.Text = resultText;
         _battleResultLabel.Visible = true;
         _cardPreviewBackground.Visible = false;
         _cardPreviewLabel.Visible = false;
@@ -113,7 +120,15 @@ public partial class BattleUI : Control
         if (_battleManager.Enemy != null)
         {
             _enemyHpLabel.Text = $"HP: {_battleManager.Enemy.Hp}/{_battleManager.Enemy.MaxHp}";
+            if (_battleManager.Enemy.Shield > 0)
+            {
+                _enemyHpLabel.Text += $" 护盾: {_battleManager.Enemy.Shield}";
+            }
             _enemyIntentLabel.Text = $"意图: {_battleManager.Enemy.CurrentIntent.Description}";
+            
+            int vulnerable = _battleManager.Enemy.GetVulnerableStacks();
+            _enemyVulnerableLabel.Text = vulnerable > 0 ? $"破甲: {vulnerable}" : "";
+            _enemyVulnerableLabel.Visible = vulnerable > 0;
         }
         
         UpdateDiceUI();
@@ -160,8 +175,8 @@ public partial class BattleUI : Control
         foreach (var card in _battleManager.Player.Hand)
         {
             Button cardBtn = new Button();
-            cardBtn.Text = $"{card.Data.Name}\nEnergy: {card.Data.EnergyCost}  Dice: {card.Data.DiceCost}\n{card.Data.Description}";
-            cardBtn.Size = new Vector2(120, 80);
+            cardBtn.Text = $"{card.Data.Name}\nE:{card.Data.EnergyCost} D:{card.Data.DiceCost}";
+            cardBtn.CustomMinimumSize = new Vector2(150, 72);
             cardBtn.Modulate = _battleManager.Player.CanPlayCard(card) 
                 ? new Color(1, 1, 1) 
                 : new Color(0.5f, 0.5f, 0.5f);
@@ -262,12 +277,18 @@ public partial class BattleUI : Control
                 break;
         }
         
+        string effectText = card.Data.Description;
+        if (card.Data.Id == "break_core")
+        {
+            effectText = $"基础伤害: 8\n骰点 >= 5 时: 施加 2 层破甲";
+        }
+        
         _cardPreviewLabel.Text = $"【{card.Data.Name}】\n" +
             $"类型: {cardTypeText}\n" +
             $"{targetText}\n" +
             $"消耗: {card.Data.EnergyCost} Energy, {card.Data.DiceCost} 骰子\n" +
             $"伤害范围: {minDamage} ~ {maxDamage}\n" +
-            $"效果: {card.Data.Description}";
+            $"效果: {effectText}";
         
         _cardPreviewBackground.Visible = true;
         _cardPreviewLabel.Visible = true;

@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://cmugxxtd10a2a"]
+
+[ext_resource type="Script" uid="uid://pn5heyy58ohl" path="res://scripts/ui/CardLayoutDemo.cs" id="1"]
+
+[node name="CardLayoutDemo" type="Control" unique_id=1436041472]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")

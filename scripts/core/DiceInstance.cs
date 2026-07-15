@@ -1,9 +1,5 @@
-using System;
-
 public class DiceInstance
 {
-    private static Random _rand = new Random();
-    
     public int Sides;
     public int? Value;
     public bool IsRolled;
@@ -19,9 +15,18 @@ public class DiceInstance
         IsConsumed = false;
     }
     
-    public int RollAndConsume()
+    public int RollAndConsume(DiceRoller roller = null)
     {
-        Value = _rand.Next(1, Sides + 1);
+        if (roller != null)
+        {
+            Value = roller.Roll(Sides);
+        }
+        else
+        {
+            var rng = new Godot.RandomNumberGenerator();
+            rng.Randomize();
+            Value = rng.RandiRange(1, Sides);
+        }
         IsRolled = true;
         IsConsumed = true;
         return Value.Value;

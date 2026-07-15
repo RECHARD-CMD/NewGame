@@ -1,0 +1,301 @@
+[gd_scene format=3 uid="uid://caur3ift81rrf"]
+
+[ext_resource type="Script" uid="uid://dd04lcgmirc2o" path="res://scripts/ui/CardView.cs" id="1"]
+
+[sub_resource type="StyleBoxFlat" id="card"]
+bg_color = Color(0.0901961, 0.101961, 0.133333, 1)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.435294, 0.478431, 0.560784, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="panel"]
+bg_color = Color(0.0627451, 0.0745098, 0.101961, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.435294, 0.478431, 0.560784, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="energy"]
+bg_color = Color(0.0509804, 0.254902, 0.341176, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.258824, 0.780392, 1, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="dice"]
+bg_color = Color(0.352941, 0.270588, 0.0745098, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.964706, 0.827451, 0.419608, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="art"]
+bg_color = Color(0.12549, 0.0705882, 0.0901961, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.909804, 0.364706, 0.247059, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="stats"]
+bg_color = Color(0.0627451, 0.0745098, 0.101961, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.909804, 0.364706, 0.247059, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="back_inner"]
+bg_color = Color(0.0588235, 0.0784314, 0.12549, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.258824, 0.780392, 1, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[node name="CardView" type="Control" unique_id=2113726756]
+custom_minimum_size = Vector2(192, 288)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 192.0
+offset_bottom = 288.0
+script = ExtResource("1")
+
+[node name="Canvas" type="Control" parent="." unique_id=186087662]
+anchors_preset = 0
+offset_right = 512.0
+offset_bottom = 768.0
+scale = Vector2(0.375, 0.375)
+
+[node name="FrontFace" type="Control" parent="Canvas" unique_id=2057473539]
+anchors_preset = 0
+offset_right = 512.0
+offset_bottom = 768.0
+
+[node name="CardBase" type="Panel" parent="Canvas/FrontFace" unique_id=312928697]
+layout_mode = 0
+offset_right = 512.0
+offset_bottom = 768.0
+theme_override_styles/panel = SubResource("card")
+
+[node name="TopBar" type="Panel" parent="Canvas/FrontFace" unique_id=2079750920]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 488.0
+offset_bottom = 88.0
+theme_override_styles/panel = SubResource("panel")
+
+[node name="EnergyBadge" type="Panel" parent="Canvas/FrontFace/TopBar" unique_id=222824838]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 8.0
+offset_right = 62.0
+offset_bottom = 56.0
+theme_override_styles/panel = SubResource("energy")
+
+[node name="EnergyLabel" type="Label" parent="Canvas/FrontFace/TopBar/EnergyBadge" unique_id=1307960043]
+layout_mode = 0
+offset_top = 4.0
+offset_right = 48.0
+offset_bottom = 18.0
+theme_override_colors/font_color = Color(0.666667, 0.701961, 0.760784, 1)
+theme_override_font_sizes/font_size = 12
+text = "EN"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EnergyValueLabel" type="Label" parent="Canvas/FrontFace/TopBar/EnergyBadge" unique_id=1255250193]
+layout_mode = 0
+offset_top = 16.0
+offset_right = 48.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.909804, 0.929412, 0.956863, 1)
+theme_override_font_sizes/font_size = 28
+text = "N"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CardNameLabel" type="Label" parent="Canvas/FrontFace/TopBar" unique_id=513728402]
+layout_mode = 0
+offset_left = 82.0
+offset_top = 8.0
+offset_right = 382.0
+offset_bottom = 56.0
+theme_override_colors/font_color = Color(0.909804, 0.929412, 0.956863, 1)
+theme_override_font_sizes/font_size = 34
+text = "Card Name"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DiceBadge" type="Panel" parent="Canvas/FrontFace/TopBar" unique_id=1422321452]
+layout_mode = 0
+offset_left = 402.0
+offset_top = 8.0
+offset_right = 450.0
+offset_bottom = 56.0
+theme_override_styles/panel = SubResource("dice")
+
+[node name="DiceLabel" type="Label" parent="Canvas/FrontFace/TopBar/DiceBadge" unique_id=1086764296]
+layout_mode = 0
+offset_top = 4.0
+offset_right = 48.0
+offset_bottom = 18.0
+theme_override_colors/font_color = Color(0.666667, 0.701961, 0.760784, 1)
+theme_override_font_sizes/font_size = 12
+text = "D"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DiceValueLabel" type="Label" parent="Canvas/FrontFace/TopBar/DiceBadge" unique_id=1297481666]
+layout_mode = 0
+offset_top = 16.0
+offset_right = 48.0
+offset_bottom = 44.0
+theme_override_colors/font_color = Color(0.909804, 0.929412, 0.956863, 1)
+theme_override_font_sizes/font_size = 28
+text = "N"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ArtFrame" type="Panel" parent="Canvas/FrontFace" unique_id=1770767279]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 104.0
+offset_right = 480.0
+offset_bottom = 424.0
+theme_override_styles/panel = SubResource("art")
+
+[node name="ArtNoteLabel" type="Label" parent="Canvas/FrontFace/ArtFrame" unique_id=1352634065]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 416.0
+offset_bottom = 288.0
+theme_override_colors/font_color = Color(0.909804, 0.929412, 0.956863, 1)
+theme_override_font_sizes/font_size = 28
+text = "AI art slot
+448 x 320"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="StatsBar" type="Panel" parent="Canvas/FrontFace" unique_id=1322206334]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 440.0
+offset_right = 480.0
+offset_bottom = 488.0
+theme_override_styles/panel = SubResource("stats")
+
+[node name="StatsLabel" type="Label" parent="Canvas/FrontFace/StatsBar" unique_id=1952909225]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 432.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(0.666667, 0.701961, 0.760784, 1)
+theme_override_font_sizes/font_size = 24
+text = "Attack · Card Info"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TextBox" type="Panel" parent="Canvas/FrontFace" unique_id=125077885]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 504.0
+offset_right = 480.0
+offset_bottom = 720.0
+theme_override_styles/panel = SubResource("panel")
+
+[node name="RulesLabel" type="Label" parent="Canvas/FrontFace/TextBox" unique_id=382140892]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 18.0
+offset_right = 424.0
+offset_bottom = 190.0
+theme_override_colors/font_color = Color(0.909804, 0.929412, 0.956863, 1)
+theme_override_font_sizes/font_size = 30
+text = "Card Effect"
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="BackFace" type="Control" parent="Canvas" unique_id=753680519]
+visible = false
+anchors_preset = 0
+offset_right = 512.0
+offset_bottom = 768.0
+
+[node name="CardBase" type="Panel" parent="Canvas/BackFace" unique_id=806532215]
+layout_mode = 0
+offset_right = 512.0
+offset_bottom = 768.0
+theme_override_styles/panel = SubResource("card")
+
+[node name="InnerPattern" type="Panel" parent="Canvas/BackFace" unique_id=2140901097]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = 480.0
+offset_bottom = 736.0
+theme_override_styles/panel = SubResource("back_inner")
+
+[node name="CoreLabel" type="Label" parent="Canvas/BackFace" unique_id=1121255000]
+layout_mode = 0
+offset_left = 96.0
+offset_top = 220.0
+offset_right = 416.0
+offset_bottom = 480.0
+theme_override_colors/font_color = Color(0.258824, 0.780392, 1, 1)
+theme_override_font_sizes/font_size = 52
+text = "◆
+DICE
+CORE
+◆"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackNoteLabel" type="Label" parent="Canvas/BackFace" unique_id=1080017508]
+layout_mode = 0
+offset_left = 96.0
+offset_top = 520.0
+offset_right = 416.0
+offset_bottom = 564.0
+theme_override_colors/font_color = Color(0.666667, 0.701961, 0.760784, 1)
+theme_override_font_sizes/font_size = 24
+text = "card back"
+horizontal_alignment = 1
+vertical_alignment = 1

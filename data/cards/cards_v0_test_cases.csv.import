@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://cxvc5tk74hrkl"
+
+[deps]
+
+files=["res://data/cards/cards_v0_test_cases.card.translation", "res://data/cards/cards_v0_test_cases.test.translation", "res://data/cards/cards_v0_test_cases.initial.translation", "res://data/cards/cards_v0_test_cases.initial.translation", "res://data/cards/cards_v0_test_cases.initial.translation", "res://data/cards/cards_v0_test_cases.initial.translation", "res://data/cards/cards_v0_test_cases.fixed.translation", "res://data/cards/cards_v0_test_cases.fixed.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.can.translation", "res://data/cards/cards_v0_test_cases.implementation.translation"]
+
+source_file="res://data/cards/cards_v0_test_cases.csv"
+dest_files=["res://data/cards/cards_v0_test_cases.card.translation", "res://data/cards/cards_v0_test_cases.test.translation", "res://data/cards/cards_v0_test_cases.initial.translation", "res://data/cards/cards_v0_test_cases.initial.translation", "res://data/cards/cards_v0_test_cases.initial.translation", "res://data/cards/cards_v0_test_cases.initial.translation", "res://data/cards/cards_v0_test_cases.fixed.translation", "res://data/cards/cards_v0_test_cases.fixed.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.expected.translation", "res://data/cards/cards_v0_test_cases.can.translation", "res://data/cards/cards_v0_test_cases.implementation.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true

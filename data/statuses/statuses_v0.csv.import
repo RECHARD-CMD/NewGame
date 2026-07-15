@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://dd0uvqysup5c3"
+
+[deps]
+
+files=["res://data/statuses/statuses_v0.name.translation", "res://data/statuses/statuses_v0.description.translation", "res://data/statuses/statuses_v0.stack.translation", "res://data/statuses/statuses_v0.duration.translation", "res://data/statuses/statuses_v0.effect.translation", "res://data/statuses/statuses_v0.effect.translation", "res://data/statuses/statuses_v0.consume.translation", "res://data/statuses/statuses_v0.consume.translation"]
+
+source_file="res://data/statuses/statuses_v0.csv"
+dest_files=["res://data/statuses/statuses_v0.name.translation", "res://data/statuses/statuses_v0.description.translation", "res://data/statuses/statuses_v0.stack.translation", "res://data/statuses/statuses_v0.duration.translation", "res://data/statuses/statuses_v0.effect.translation", "res://data/statuses/statuses_v0.effect.translation", "res://data/statuses/statuses_v0.consume.translation", "res://data/statuses/statuses_v0.consume.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true
