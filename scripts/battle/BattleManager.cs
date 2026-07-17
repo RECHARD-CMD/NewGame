@@ -68,6 +68,12 @@ public partial class BattleManager : Node
     {
         IsPlayerTurn = true;
         
+        if (Player.Shield > 0)
+        {
+            EmitSignal(SignalName.BattleLog, $"护盾消散: {Player.Shield}");
+            Player.Shield = 0;
+        }
+        
         if (Player.NextTurnEnergyBonus > 0)
         {
             Player.RestoreEnergy(Player.NextTurnEnergyBonus);
@@ -164,9 +170,11 @@ public partial class BattleManager : Node
             {
                 EmitSignal(SignalName.BattleLost);
                 EmitSignal(SignalName.BattleLog, "失败!");
+                EmitSignal(SignalName.CardResolved, card.Data.Id, card.Data.Subtype.ToString());
                 return true;
             }
             
+            EmitSignal(SignalName.CardResolved, card.Data.Id, card.Data.Subtype.ToString());
             return true;
         }
         
@@ -209,25 +217,41 @@ public partial class BattleManager : Node
     
     private bool ProcessCardBySubtype(CardInstance card, DiceInstance consumedDice)
     {
+        bool success;
         switch (card.Data.Subtype)
         {
             case CardSubtype.Attack:
-                return ProcessAttackCard(card, consumedDice);
+                success = ProcessAttackCard(card, consumedDice);
+                break;
             case CardSubtype.Defense:
-                return ProcessDefenseCard(card, consumedDice);
+                success = ProcessDefenseCard(card, consumedDice);
+                break;
             case CardSubtype.PositiveBuff:
-                return ProcessPositiveBuffCard(card, consumedDice);
+                success = ProcessPositiveBuffCard(card, consumedDice);
+                break;
             case CardSubtype.NegativeBuff:
-                return ProcessNegativeBuffCard(card, consumedDice);
+                success = ProcessNegativeBuffCard(card, consumedDice);
+                break;
             case CardSubtype.BattleLevelConsumable:
-                return ProcessBattleConsumableCard(card, consumedDice);
+                success = ProcessBattleConsumableCard(card, consumedDice);
+                break;
             case CardSubtype.GameLevelConsumable:
-                return ProcessGameConsumableCard(card, consumedDice);
+                success = ProcessGameConsumableCard(card, consumedDice);
+                break;
             case CardSubtype.Equipment:
-                return ProcessEquipmentCard(card);
+                success = ProcessEquipmentCard(card);
+                break;
             default:
-                return ProcessAttackCard(card, consumedDice);
+                success = ProcessAttackCard(card, consumedDice);
+                break;
         }
+        
+        if (success)
+        {
+            EmitSignal(SignalName.CardResolved, card.Data.Id, card.Data.Subtype.ToString());
+        }
+        
+        return success;
     }
     
     private bool ProcessAttackCard(CardInstance card, DiceInstance consumedDice)
@@ -342,6 +366,13 @@ public partial class BattleManager : Node
         else
             Player.MoveToDiscard(card);
         
+        if (card.Data.DamageFormula != null)
+        {
+            int baseDamage = card.CalculateDamage(consumedDice);
+            int finalDamage = Enemy.TakeDamage(baseDamage);
+            EmitSignal(SignalName.BattleLog, $"造成伤害: {finalDamage}");
+        }
+        
         if (card.Data.AppliedDebuffType.HasValue)
         {
             switch (card.Data.AppliedDebuffType.Value)
@@ -373,9 +404,15 @@ public partial class BattleManager : Node
         }
         
         card.RemainingUses--;
-        Player.RestoreEnergy(card.Data.EffectAmount + (consumedDice?.Value.GetValueOrDefault() ?? 0));
-        Player.MoveToExhaust(card);
-        EmitSignal(SignalName.BattleLog, $"恢复 Energy: {card.Data.EffectAmount + (consumedDice?.Value.GetValueOrDefault() ?? 0)}");
+        int restoreAmount = card.Data.EffectAmount + (consumedDice?.Value.GetValueOrDefault() ?? 0);
+        Player.RestoreEnergy(restoreAmount);
+        EmitSignal(SignalName.BattleLog, $"恢复 Energy: {restoreAmount}");
+        
+        if (card.RemainingUses <= 0)
+        {
+            Player.MoveToExhaust(card);
+            EmitSignal(SignalName.BattleLog, $"{card.Data.Name} 已耗尽");
+        }
         
         return true;
     }
@@ -393,12 +430,17 @@ public partial class BattleManager : Node
     {
         if (card.Data.EquipSlot.HasValue)
         {
+            Player.MoveToDiscard(card);
             Player.EquipCard(card.Data);
             if (card.Data.EquipSlot == EquipmentSlot.Weapon)
             {
                 Player.EquippedWeaponBonus = card.Data.EffectAmount;
             }
             EmitSignal(SignalName.BattleLog, $"装备武器: 攻击伤害 +{card.Data.EffectAmount}");
+        }
+        else
+        {
+            Player.MoveToDiscard(card);
         }
         
         return true;
@@ -504,6 +546,7 @@ public partial class BattleManager : Node
             if (card.Data.Subtype == CardSubtype.Curse)
                 card.HasTriggeredThisTurn = false;
         
+        Player.EndTurn();
         Player.DiscardHand();
         EmitSignal(SignalName.PlayerTurnEnded);
         
@@ -556,12 +599,25 @@ public partial class BattleManager : Node
             return;
         }
         
+        int weakReduction = Enemy.GetWeakStacks();
+        int finalDamage = Mathf.Max(0, damage - weakReduction);
+        
+        if (weakReduction > 0)
+        {
+            EmitSignal(SignalName.BattleLog, $"Weak 减伤: {damage} → {finalDamage}");
+        }
+        
         int energyBefore = Player.Energy;
         int hpBefore = Player.Hp;
-        Player.TakeDamage(damage);
+        int shieldAbsorbed = Player.TakeDamage(finalDamage);
         
-        EmitSignal(SignalName.EnemyAttacked, damage, energyBefore, Player.Energy, hpBefore, Player.Hp);
-        EmitSignal(SignalName.BattleLog, $"{Enemy.Name} 攻击: {damage}");
+        if (shieldAbsorbed > 0)
+        {
+            EmitSignal(SignalName.BattleLog, $"护盾吸收: {shieldAbsorbed}, 剩余护盾: {Player.Shield}");
+        }
+        
+        EmitSignal(SignalName.EnemyAttacked, finalDamage, energyBefore, Player.Energy, hpBefore, Player.Hp);
+        EmitSignal(SignalName.BattleLog, $"{Enemy.Name} 攻击: {finalDamage}");
         EmitSignal(SignalName.BattleLog, $"Energy: {energyBefore} → {Player.Energy}");
         EmitSignal(SignalName.BattleLog, $"HP: {hpBefore} → {Player.Hp}");
         
@@ -583,6 +639,7 @@ public partial class BattleManager : Node
     [Signal] public delegate void PlayerTurnStartedEventHandler(int turn);
     [Signal] public delegate void PlayerTurnEndedEventHandler();
     [Signal] public delegate void CardPlayedEventHandler(string cardId, int damage, int diceResult, int vulnerableAdded);
+    [Signal] public delegate void CardResolvedEventHandler(string cardId, string subtype);
     [Signal] public delegate void EnemyAttackedEventHandler(int damage, int energyBefore, int energyAfter, int hpBefore, int hpAfter);
     [Signal] public delegate void BattleWonEventHandler();
     [Signal] public delegate void BattleLostEventHandler();

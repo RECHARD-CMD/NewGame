@@ -41,7 +41,7 @@ public class PlayerState
         DiceRoller = roller ?? new DiceRoller();
     }
     
-    public void TakeDamage(int damage)
+    public int TakeDamage(int damage)
     {
         int totalDamage = damage;
         
@@ -53,6 +53,8 @@ public class PlayerState
         Energy -= energyDamage;
         int hpDamage = totalDamage - energyDamage;
         Hp -= hpDamage;
+        
+        return shieldDamage;
     }
     
     public void RestoreEnergy(int amount)

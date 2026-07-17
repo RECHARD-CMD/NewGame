@@ -90,8 +90,7 @@ public class EnemyState
     public int CalculateDamage(int baseDamage)
     {
         int vulnerable = GetVulnerableStacks();
-        int weak = GetWeakStacks();
-        return baseDamage + vulnerable - weak;
+        return baseDamage + vulnerable;
     }
     
     public int TakeDamage(int damage)

@@ -66,6 +66,7 @@ public partial class BattleUI : Control
         _battleManager.PlayerTurnStarted += OnPlayerTurnStarted;
         _battleManager.PlayerTurnEnded += OnPlayerTurnEnded;
         _battleManager.CardPlayed += OnCardPlayed;
+        _battleManager.CardResolved += OnCardResolved;
         _battleManager.EnemyAttacked += OnEnemyAttacked;
         _battleManager.BattleWon += OnBattleWon;
         _battleManager.BattleLost += OnBattleLost;
@@ -116,6 +117,11 @@ public partial class BattleUI : Control
         }
         _battleResultLabel.Text = resultText;
         _battleResultLabel.Visible = true;
+        _cardPreviewPanel.Visible = false;
+    }
+    
+    public void OnCardResolved(string cardId, string subtype)
+    {
         _cardPreviewPanel.Visible = false;
         UpdateUI();
     }

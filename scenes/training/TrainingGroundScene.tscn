@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://b64vqk0vruvl1"]
 
 [ext_resource type="Script" uid="uid://bjjvwfr0bag1l" path="res://scripts/battle/BattleManager.cs" id="1"]
-[ext_resource type="Script" uid="uid://5atqmpxxjbhs" path="res://scripts/ui/BattleUI.cs" id="2"]
-[ext_resource type="Script" uid="uid://cpt20bik108gd" path="res://scripts/training/TrainingGroundController.cs" id="3"]
-[ext_resource type="Script" uid="uid://b2w63snnnr5cl" path="res://scripts/ui/BattleLogPanel.cs" id="4"]
+[ext_resource type="Script" uid="uid://cpt20bik108gd" path="res://scripts/training/TrainingGroundController.cs" id="2"]
+[ext_resource type="Script" uid="uid://b2w63snnnr5cl" path="res://scripts/ui/BattleLogPanel.cs" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/BattleUI.tscn" id="4"]
 
 [node name="TrainingGroundScene" type="Control" unique_id=1]
 layout_mode = 3
@@ -12,339 +12,27 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("3")
+script = ExtResource("2")
 
 [node name="BattleManager" type="Node" parent="." unique_id=2]
 script = ExtResource("1")
 
-[node name="BattleUI" type="Control" parent="." unique_id=50]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-script = ExtResource("2")
-
-[node name="Background" type="ColorRect" parent="BattleUI" unique_id=51]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.05, 0.05, 0.1, 1)
-
-[node name="TopPanel" type="Control" parent="BattleUI" unique_id=52]
-layout_mode = 1
-anchor_right = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = 70.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="TurnLabel" type="Label" parent="BattleUI/TopPanel" unique_id=53]
-custom_minimum_size = Vector2(80, 30)
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -40.0
-offset_right = 40.0
-offset_bottom = 30.0
-grow_horizontal = 2
-text = "回合 1"
-horizontal_alignment = 1
-
-[node name="PlayerStatus" type="VBoxContainer" parent="BattleUI/TopPanel" unique_id=54]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.62
-anchor_right = 0.62
-offset_left = -40.0
-offset_right = 90.0
-offset_bottom = 52.0
-
-[node name="PlayerHpLabel" type="Label" parent="BattleUI/TopPanel/PlayerStatus" unique_id=55]
-layout_mode = 2
-text = "HP: 10/10"
-
-[node name="PlayerEnergyLabel" type="Label" parent="BattleUI/TopPanel/PlayerStatus" unique_id=56]
-layout_mode = 2
-text = "Energy: 30/30"
-
-[node name="PlayerShieldLabel" type="Label" parent="BattleUI/TopPanel/PlayerStatus" unique_id=96]
-visible = false
-layout_mode = 2
-text = "护盾: 0"
-
-[node name="EnemyStatus" type="VBoxContainer" parent="BattleUI/TopPanel" unique_id=57]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.77
-anchor_right = 0.77
-offset_left = -40.0
-offset_right = 140.0
-offset_bottom = 66.0
-
-[node name="EnemyHpLabel" type="Label" parent="BattleUI/TopPanel/EnemyStatus" unique_id=58]
-layout_mode = 2
-text = "HP: 20/20"
-
-[node name="EnemyIntentLabel" type="Label" parent="BattleUI/TopPanel/EnemyStatus" unique_id=59]
-layout_mode = 2
-text = "意图: 攻击 14"
-
-[node name="EnemyVulnerableLabel" type="Label" parent="BattleUI/TopPanel/EnemyStatus" unique_id=60]
-visible = false
-layout_mode = 2
-text = "破甲: 0"
-
-[node name="EnemyArea" type="Panel" parent="BattleUI" unique_id=61]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -135.0
-offset_top = 78.0
-offset_right = 135.0
-offset_bottom = 220.0
-grow_horizontal = 2
-
-[node name="EnemyLabel" type="Label" parent="BattleUI/EnemyArea" unique_id=62]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-text = "TrainingBeast"
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="DicePanel" type="Panel" parent="BattleUI" unique_id=63]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -70.0
-offset_top = 392.0
-offset_right = 70.0
-offset_bottom = 455.0
-grow_horizontal = 2
-
-[node name="DiceLabel" type="Label" parent="BattleUI/DicePanel" unique_id=64]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-offset_top = 5.0
-offset_bottom = 25.0
-grow_horizontal = 2
-text = "骰子"
-horizontal_alignment = 1
-
-[node name="DiceContainer" type="HBoxContainer" parent="BattleUI/DicePanel" unique_id=65]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 25.0
-offset_right = -10.0
-offset_bottom = -5.0
-grow_horizontal = 2
-grow_vertical = 2
-alignment = 1
-
-[node name="CardPanel" type="Panel" parent="BattleUI" unique_id=66]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = -250.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="CardLabel" type="Label" parent="BattleUI/CardPanel" unique_id=67]
-layout_mode = 1
-anchors_preset = -1
-anchor_right = 1.0
-offset_top = 5.0
-offset_bottom = 25.0
-grow_horizontal = 2
-text = "手牌"
-horizontal_alignment = 2
-
-[node name="PileRow" type="HBoxContainer" parent="BattleUI/CardPanel" unique_id=75]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 30.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="DrawPileView" type="VBoxContainer" parent="BattleUI/CardPanel/PileRow" unique_id=76]
-custom_minimum_size = Vector2(80, 100)
-layout_mode = 2
-mouse_filter = 2
-
-[node name="DrawPileBg" type="ColorRect" parent="BattleUI/CardPanel/PileRow/DrawPileView" unique_id=77]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-color = Color(0.1, 0.15, 0.4, 1)
-
-[node name="DrawPileLabel" type="Label" parent="BattleUI/CardPanel/PileRow/DrawPileView" unique_id=78]
-layout_mode = 2
-text = "抽牌堆"
-
-[node name="DrawPileCount" type="Label" parent="BattleUI/CardPanel/PileRow/DrawPileView" unique_id=79]
-layout_mode = 2
-text = "0"
-
-[node name="CardContainer" type="HBoxContainer" parent="BattleUI/CardPanel/PileRow" unique_id=68]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-alignment = 1
-
-[node name="DiscardPileView" type="VBoxContainer" parent="BattleUI/CardPanel/PileRow" unique_id=80]
-custom_minimum_size = Vector2(80, 100)
-layout_mode = 2
-mouse_filter = 2
-
-[node name="DiscardPileBg" type="ColorRect" parent="BattleUI/CardPanel/PileRow/DiscardPileView" unique_id=81]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-color = Color(0.4, 0.1, 0.1, 1)
-
-[node name="DiscardPileLabel" type="Label" parent="BattleUI/CardPanel/PileRow/DiscardPileView" unique_id=82]
-layout_mode = 2
-text = "弃牌堆"
-
-[node name="DiscardPileCount" type="Label" parent="BattleUI/CardPanel/PileRow/DiscardPileView" unique_id=83]
-layout_mode = 2
-text = "0"
-
-[node name="ExhaustPileView" type="VBoxContainer" parent="BattleUI/CardPanel/PileRow" unique_id=88]
-custom_minimum_size = Vector2(80, 100)
-layout_mode = 2
-mouse_filter = 2
-
-[node name="ExhaustPileBg" type="ColorRect" parent="BattleUI/CardPanel/PileRow/ExhaustPileView" unique_id=89]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-color = Color(0.4, 0.1, 0.4, 1)
-
-[node name="ExhaustPileLabel" type="Label" parent="BattleUI/CardPanel/PileRow/ExhaustPileView" unique_id=90]
-layout_mode = 2
-text = "消耗堆"
-
-[node name="ExhaustPileCount" type="Label" parent="BattleUI/CardPanel/PileRow/ExhaustPileView" unique_id=91]
-layout_mode = 2
-text = "0"
-
-[node name="EndTurnButton" type="Button" parent="BattleUI" unique_id=69]
-custom_minimum_size = Vector2(100, 40)
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -130.0
-offset_top = 398.0
-offset_right = -20.0
-offset_bottom = 438.0
-text = "结束回合"
-
-[node name="BattleResultLabel" type="Label" parent="BattleUI" unique_id=70]
-visible = false
-custom_minimum_size = Vector2(440, 100)
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -220.0
-offset_top = 275.0
-offset_right = 220.0
-offset_bottom = 365.0
-grow_horizontal = 2
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="CardPreviewPanel" type="PanelContainer" parent="BattleUI" unique_id=71]
-visible = false
-layout_mode = 1
-anchors_preset = -1
-offset_left = 20.0
-offset_top = 280.0
-offset_right = 360.0
-offset_bottom = 470.0
-
-[node name="PreviewVBox" type="VBoxContainer" parent="BattleUI/CardPreviewPanel" unique_id=92]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="CostRow" type="HBoxContainer" parent="BattleUI/CardPreviewPanel/PreviewVBox" unique_id=93]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="EnergyCostLabel" type="Label" parent="BattleUI/CardPreviewPanel/PreviewVBox/CostRow" unique_id=94]
-layout_mode = 2
-text = "Energy: 0"
-
-[node name="DiceCostLabel" type="Label" parent="BattleUI/CardPreviewPanel/PreviewVBox/CostRow" unique_id=95]
-layout_mode = 2
-text = "Dice: 无需"
-
-[node name="EffectRow" type="HBoxContainer" parent="BattleUI/CardPreviewPanel/PreviewVBox" unique_id=96]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="DamageRangeLabel" type="Label" parent="BattleUI/CardPreviewPanel/PreviewVBox/EffectRow" unique_id=97]
-layout_mode = 2
-text = "伤害: 无"
-
-[node name="EffectLabel" type="Label" parent="BattleUI/CardPreviewPanel/PreviewVBox/EffectRow" unique_id=98]
-layout_mode = 2
-text = "效果: 无"
-
-[node name="DescriptionLabel" type="Label" parent="BattleUI/CardPreviewPanel/PreviewVBox" unique_id=99]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-autowrap_mode = 1
-text = "描述"
+[node name="BattleUI" parent="." unique_id=1140299852 instance=ExtResource("4")]
 
 [node name="OverlayLayer" type="CanvasLayer" parent="." unique_id=84]
 layer = 10
 
 [node name="DimMask" type="ColorRect" parent="OverlayLayer" unique_id=85]
 visible = false
-layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.5)
-mouse_filter = 0
 
 [node name="ConfigFloatingPanel" type="Panel" parent="OverlayLayer" unique_id=3]
 visible = false
-layout_mode = 1
 anchors_preset = 9
 anchor_bottom = 1.0
 offset_right = 200.0
@@ -569,7 +257,7 @@ text = "塞入临时诅咒"
 
 [node name="LogFloatingPanel" type="Control" parent="OverlayLayer" unique_id=73]
 visible = false
-layout_mode = 1
+layout_mode = 3
 anchors_preset = 11
 anchor_left = 1.0
 anchor_right = 1.0
@@ -577,7 +265,7 @@ anchor_bottom = 1.0
 offset_left = -290.0
 grow_horizontal = 0
 grow_vertical = 2
-script = ExtResource("4")
+script = ExtResource("3")
 
 [node name="LogLabel" type="RichTextLabel" parent="OverlayLayer/LogFloatingPanel" unique_id=74]
 custom_minimum_size = Vector2(280, 100)
@@ -594,7 +282,6 @@ grow_vertical = 2
 
 [node name="ConfigToggleButton" type="Button" parent="OverlayLayer" unique_id=86]
 custom_minimum_size = Vector2(70, 30)
-layout_mode = 1
 anchors_preset = -1
 offset_left = 10.0
 offset_top = 10.0
@@ -604,7 +291,6 @@ text = "配置"
 
 [node name="LogToggleButton" type="Button" parent="OverlayLayer" unique_id=87]
 custom_minimum_size = Vector2(70, 30)
-layout_mode = 1
 anchors_preset = -1
 offset_left = 90.0
 offset_top = 10.0
@@ -614,7 +300,6 @@ text = "日志"
 
 [node name="DeckToggleButton" type="Button" parent="OverlayLayer" unique_id=97]
 custom_minimum_size = Vector2(70, 30)
-layout_mode = 1
 anchors_preset = -1
 offset_left = 170.0
 offset_top = 10.0
@@ -625,11 +310,10 @@ text = "牌包"
 [node name="DeckFloatingPanel" type="PanelContainer" parent="OverlayLayer" unique_id=98]
 visible = false
 custom_minimum_size = Vector2(600, 450)
-layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.5
-anchor_right = 0.5
 anchor_top = 0.5
+anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -300.0
 offset_top = -225.0
@@ -676,5 +360,5 @@ text = "效果"
 [node name="MiniDescLabel" type="Label" parent="OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox" unique_id=107]
 layout_mode = 2
 size_flags_vertical = 3
-autowrap_mode = 1
 text = "描述"
+autowrap_mode = 1

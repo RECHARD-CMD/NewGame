@@ -340,6 +340,7 @@ CSV/XLSX 用于稳定、可批量编辑的数据，例如：
 
 - Godot 4.x .NET 是唯一运行时。
 - 当前项目使用 C#。
+- 当前 `.csproj` 使用 `Godot.NET.Sdk/4.7.1`；除非有明确升级规格和验证结果，不得擅自升降 SDK 版本。
 - 不引入额外游戏引擎或并行运行时。
 - 外部工具产物最终都必须能被 Godot 导入、加载或引用。
 
@@ -349,6 +350,17 @@ CSV/XLSX 用于稳定、可批量编辑的数据，例如：
 - 脚本使用 C#，除非已有明确理由，不混用 GDScript 承担核心战斗逻辑。
 - 节点命名应表达职责，例如 `BattleScene`、`CardView`、`DiceSlot`、`EnemyIntentView`。
 - 避免把大量逻辑写在 `Main` 场景中；核心逻辑应拆到明确脚本或组件。
+
+当前战斗 UI 必须遵守以下场景边界：
+
+- `scenes/ui/BattleUI.tscn` 是战斗 UI 的唯一节点结构来源。
+- `BattleScene.tscn` 和 `TrainingGroundScene.tscn` 都必须实例化同一个 `BattleUI.tscn`，不得各自复制或内嵌另一套 BattleUI 节点树。
+- `TrainingGroundScene.tscn` 只在共享 BattleUI 之外增加训练场专用 `OverlayLayer`。
+- `OverlayLayer` 负责 `DimMask`、`ConfigFloatingPanel`、`LogFloatingPanel`、`DeckFloatingPanel` 以及“配置 / 日志 / 牌包”入口按钮。
+- `TrainingGroundController.cs` 中的 `GetNode` 路径属于场景契约。移动、重命名、更换节点类型或增加中间节点前，必须同步核对所有路径和泛型类型。
+- 提取共享场景时，应从当前已验证可用的节点树原样提取；不得重新手写一套“近似布局”。
+- 修改 BattleUI 时只改共享场景；修改训练场 Debug 浮窗时只改 Overlay，不得顺手重写另一部分。
+- 不得为了修复单个节点而整文件重写 `.tscn`。确需大改时，必须先保存或通过 Git 核对原节点树，并逐项验证未丢失节点、脚本、锚点和信号入口。
 
 ### 5.3 状态管理
 
@@ -369,6 +381,26 @@ CSV/XLSX 用于稳定、可批量编辑的数据，例如：
 - 手动按规格中的测试步骤复现。
 
 如果无法运行 Godot，必须在回复或提交说明中明确说明“未运行”的原因。
+
+修改战斗核心、共享 BattleUI、训练场或场景节点结构时，仅通过 C# 编译不算完成。至少执行：
+
+```text
+dotnet build --no-restore
+Godot --headless --path . --quit-after 3
+Godot --headless --path . res://scenes/battle/BattleScene.tscn --quit-after 3
+```
+
+验收时必须检查完整控制台输出，不能只看退出码。输出中不得出现：
+
+```text
+ERROR
+Exception
+Node not found
+InvalidCastException
+invalid UID
+```
+
+无头启动只能验证场景加载和脚本初始化。涉及按钮、浮窗、锚点、重叠或分辨率的 UI 修改，还必须在 Godot 窗口中人工验证交互与视觉结果。
 
 ### 5.5 像素风与渲染设置
 
@@ -428,6 +460,21 @@ UI 规则：
 - 当前 demo 中，破甲不在每次受击后减少；破甲在敌人回合结束时减少 1 层。
 - 当前 demo 不做手动选骰、拖拽绑骰或提前显示骰点。
 - 不能打出的卡牌仍应允许单击预览，但双击时不应结算。
+
+当前 UI 更新事件约定：
+
+- `CardPlayed` 只用于攻击结果文字和后续战斗演出，不负责通用 UI 重建。
+- `CardResolved` 是卡牌成功结算后的统一完成事件，负责触发一次通用 UI 刷新。
+- 攻击、防御、增益、减益、消耗品、装备和诅咒成功结算后都必须恰好发射一次 `CardResolved`。
+- 失败的出牌尝试不得发射 `CardResolved`。
+- 不允许同一张卡因为同时处理 `CardPlayed` 和 `CardResolved` 而重复执行通用 `UpdateUI()`。
+
+当前护盾时序：
+
+- 玩家护盾必须能够承受紧接着的敌人行动。
+- 不得在 `EndPlayerTurn()` 或敌人攻击前清空玩家护盾。
+- 当前规则是在下一次 `StartPlayerTurn()` 开始时清除上一回合剩余护盾，并记录日志。
+- 敌人攻击时应记录护盾吸收量、剩余护盾、Energy 变化和 HP 变化。
 
 当前卡牌预览至少显示：
 
@@ -658,7 +705,7 @@ voice_character_lineid_v001.wav
 2. `EnergyStrike`：消耗 1 Energy 和 1 枚默认骰；双击卡牌即打出，当场掷骰，造成 `骰点 + 2` 伤害。
 3. 先只实现一个敌人：`TrainingBeast`。
 4. `TrainingBeast`：拥有 20 HP；当前调试阶段每回合 Intent 为造成 14 点伤害，方便验证 Energy 不足时 HP 会正常减少，以及失败状态能触发。
-5. 先只实现玩家 30 HP、12 Energy、2d6。
+5. 当前训练场与最新初步构想的基准参数为玩家 10 HP、30 Energy、2d6；旧的 30 HP、12 Energy 测试记录不得继续作为当前验收口径。
 6. 先不实现完整洗牌、奖励、酒馆、队友。
 7. 当单张卡牌、自动消耗未揭示骰、单个敌人的战斗能跑通后，再扩展 Deck、Status、Reward、Tavern。
 
@@ -667,6 +714,25 @@ voice_character_lineid_v001.wav
 当前阶段允许优先实现 `TrainingGroundScene`，中文名为“训练场”，用于验证战斗系统、卡牌效果、骰子结算、状态结算和 Energy/HP 承伤规则。
 
 训练场不是正式关卡、不是爬塔节点、不是正式游戏流程的一部分。它是 Debug 场景，可以在开发阶段临时作为主场景。
+
+当前训练场场景组成固定为：
+
+```text
+TrainingGroundScene
+├── BattleManager
+├── BattleUI（实例化 scenes/ui/BattleUI.tscn）
+└── OverlayLayer
+    ├── DimMask
+    ├── ConfigFloatingPanel
+    ├── LogFloatingPanel（直接挂载 BattleLogPanel.cs）
+    │   └── LogLabel
+    ├── ConfigToggleButton
+    ├── LogToggleButton
+    ├── DeckToggleButton
+    └── DeckFloatingPanel
+```
+
+`LogLabel` 必须是 `LogFloatingPanel` 的直接子节点。不要额外插入同名 `BattleLogPanel` 中间节点，否则会破坏 `BattleLogPanel.cs` 和 `TrainingGroundController.cs` 的节点路径契约。
 
 训练场可以包含：
 
@@ -681,6 +747,8 @@ voice_character_lineid_v001.wav
 训练场第一版必须优先支持：
 
 - 显示战斗日志。
+- 左上角“配置 / 日志 / 牌包”按钮可以打开对应浮窗，三个浮窗互斥显示。
+- 点击 `DimMask` 可以关闭当前浮窗，并恢复战斗区交互。
 - 切换 `TrainingDummy` 和 `TrainingBeast`。
 - 修改玩家 HP、Energy、骰子数量、骰子面数。
 - 修改掷骰模式：Random / Fixed。
@@ -725,6 +793,9 @@ scripts/battle/DiceRoller.cs
 - 不要提交 `.godot/` 缓存目录。
 - 不要在战斗闭环验证前优先投入完整爬塔、完整职业、实时 3D 角色或复杂 shader。
 - 不要把训练场专用逻辑写进正式战斗规则；训练场只能作为调试壳调用正式系统。
+- 不要以“构建成功”代替场景启动和 UI 人工验收。
+- 不要在修复共享 BattleUI 时重写训练场 Overlay，也不要在修复训练场浮窗时复制 BattleUI。
+- 不要伪造 Godot 资源 UID；应使用 Godot 生成的真实 UID，或在可选位置只保留资源路径。
 - 不要把大型二进制文件直接放入普通 Git 历史，应使用 Git LFS。
 - 不要删除或覆盖用户未确认的工作成果。
 
