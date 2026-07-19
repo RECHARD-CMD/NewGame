@@ -1,4 +1,4 @@
-﻿card_id,card_name,test_case,initial_energy,initial_dice_pool,initial_enemy_hp,initial_enemy_vulnerable,fixed_roll_1,fixed_roll_2,expected_energy_delta,expected_dice_pool_delta,expected_damage,expected_enemy_hp_delta,expected_enemy_vulnerable_delta,can_play,implementation_batch
+﻿﻿card_id,card_name,test_case,initial_energy,initial_dice_pool,initial_enemy_hp,initial_enemy_vulnerable,fixed_roll_1,fixed_roll_2,expected_energy_delta,expected_dice_pool_delta,expected_damage,expected_enemy_hp_delta,expected_enemy_vulnerable_delta,can_play,implementation_batch
 energy_strike,EnergyStrike,基础测试_低骰,12,2,20,0,1,,-1,-1,3,-3,0,true,第一批
 energy_strike,EnergyStrike,基础测试_高骰,12,2,20,0,6,,-1,-1,8,-8,0,true,第一批
 energy_strike,EnergyStrike,能量不足,0,2,20,0,1,,0,0,0,0,0,false,第一批

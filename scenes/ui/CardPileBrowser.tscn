@@ -1,27 +1,23 @@
-[gd_scene format=3 uid="uid://a1b2c3d4e5f6"]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/CardPileBrowser.cs" id="1"]
 
-[node name="CardPileBrowser" type="Control" unique_id=1]
+[node name="CardPileBrowser" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 script = ExtResource("1")
 
-[node name="BackgroundDim" type="ColorRect" parent="." unique_id=2]
+[node name="BackgroundDim" type="ColorRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 color = Color(0, 0, 0, 0.5)
-mouse_filter = 2
+mouse_filter = 0
 
-[node name="BrowserPanel" type="PanelContainer" parent="." unique_id=3]
+[node name="BrowserPanel" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(600, 400)
 layout_mode = 1
 anchors_preset = -1
@@ -34,55 +30,58 @@ offset_top = -200.0
 offset_right = 300.0
 offset_bottom = 200.0
 
-[node name="BrowserVBox" type="VBoxContainer" parent="BrowserPanel" unique_id=4]
+[node name="BrowserVBox" type="VBoxContainer" parent="BrowserPanel"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TitleLabel" type="Label" parent="BrowserPanel/BrowserVBox" unique_id=5]
+[node name="TitleLabel" type="Label" parent="BrowserPanel/BrowserVBox"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 text = "抽牌堆"
 horizontal_alignment = 1
 
-[node name="ContentHBox" type="HBoxContainer" parent="BrowserPanel/BrowserVBox" unique_id=6]
+[node name="ContentHBox" type="HBoxContainer" parent="BrowserPanel/BrowserVBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="CardScroll" type="ScrollContainer" parent="BrowserPanel/BrowserVBox/ContentHBox" unique_id=7]
+[node name="CardScroll" type="ScrollContainer" parent="BrowserPanel/BrowserVBox/ContentHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="CardList" type="VBoxContainer" parent="BrowserPanel/BrowserVBox/ContentHBox/CardScroll" unique_id=8]
+[node name="CardList" type="VBoxContainer" parent="BrowserPanel/BrowserVBox/ContentHBox/CardScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="MiniPreviewPanel" type="PanelContainer" parent="BrowserPanel/BrowserVBox/ContentHBox" unique_id=9]
+[node name="MiniPreviewPanel" type="PanelContainer" parent="BrowserPanel/BrowserVBox/ContentHBox"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="MiniPreviewVBox" type="VBoxContainer" parent="BrowserPanel/BrowserVBox/ContentHBox/MiniPreviewPanel" unique_id=10]
+[node name="MiniPreviewVBox" type="VBoxContainer" parent="BrowserPanel/BrowserVBox/ContentHBox/MiniPreviewPanel"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="MiniCostLabel" type="Label" parent="BrowserPanel/BrowserVBox/ContentHBox/MiniPreviewPanel/MiniPreviewVBox" unique_id=11]
+[node name="MiniCostLabel" type="Label" parent="BrowserPanel/BrowserVBox/ContentHBox/MiniPreviewPanel/MiniPreviewVBox"]
 layout_mode = 2
 text = "消耗"
 
-[node name="MiniEffectLabel" type="Label" parent="BrowserPanel/BrowserVBox/ContentHBox/MiniPreviewPanel/MiniPreviewVBox" unique_id=12]
-layout_mode = 2
-text = "效果"
-
-[node name="MiniDescLabel" type="Label" parent="BrowserPanel/BrowserVBox/ContentHBox/MiniPreviewPanel/MiniPreviewVBox" unique_id=13]
+[node name="MiniRuleLabel" type="Label" parent="BrowserPanel/BrowserVBox/ContentHBox/MiniPreviewPanel/MiniPreviewVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 autowrap_mode = 1
-text = "描述"
+text = ""
 
-[node name="CloseButton" type="Button" parent="BrowserPanel/BrowserVBox" unique_id=14]
+[node name="MiniKeywordLabel" type="Label" parent="BrowserPanel/BrowserVBox/ContentHBox/MiniPreviewPanel/MiniPreviewVBox"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+autowrap_mode = 1
+text = ""
+
+[node name="CloseButton" type="Button" parent="BrowserPanel/BrowserVBox"]
 custom_minimum_size = Vector2(100, 30)
 layout_mode = 2
 text = "关闭"

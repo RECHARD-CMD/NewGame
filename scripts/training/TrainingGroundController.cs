@@ -40,15 +40,11 @@ public partial class TrainingGroundController : Node
     private Control _logFloatingPanel;
     private PanelContainer _deckFloatingPanel;
     
-    private VBoxContainer _drawPileView;
-    private VBoxContainer _discardPileView;
-    private VBoxContainer _exhaustPileView;
-    
     private Label _deckTitleLabel;
     private VBoxContainer _deckCardList;
     private Label _deckMiniCostLabel;
-    private Label _deckMiniEffectLabel;
-    private Label _deckMiniDescLabel;
+    private Label _deckMiniRuleLabel;
+    private Label _deckMiniKeywordLabel;
     
     private TrainingConfig _config = new TrainingConfig();
     
@@ -94,12 +90,8 @@ public partial class TrainingGroundController : Node
         _deckTitleLabel = GetNode<Label>("OverlayLayer/DeckFloatingPanel/DeckVBox/DeckTitleLabel");
         _deckCardList = GetNode<VBoxContainer>("OverlayLayer/DeckFloatingPanel/DeckVBox/DeckCardScroll/DeckCardList");
         _deckMiniCostLabel = GetNode<Label>("OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox/MiniCostLabel");
-        _deckMiniEffectLabel = GetNode<Label>("OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox/MiniEffectLabel");
-        _deckMiniDescLabel = GetNode<Label>("OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox/MiniDescLabel");
-        
-        _drawPileView = GetNode<VBoxContainer>("BattleUI/CardPanel/PileRow/DrawPileView");
-        _discardPileView = GetNode<VBoxContainer>("BattleUI/CardPanel/PileRow/DiscardPileView");
-        _exhaustPileView = GetNode<VBoxContainer>("BattleUI/CardPanel/PileRow/ExhaustPileView");
+        _deckMiniRuleLabel = GetNode<Label>("OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox/MiniRuleLabel");
+        _deckMiniKeywordLabel = GetNode<Label>("OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox/MiniKeywordLabel");
         
         _playerHpInput.Text = _config.PlayerHp.ToString();
         _playerEnergyInput.Text = _config.PlayerEnergy.ToString();
@@ -135,10 +127,6 @@ public partial class TrainingGroundController : Node
         _logToggleButton.Pressed += OnLogToggle;
         _deckToggleButton.Pressed += OnDeckToggle;
         _dimMask.GuiInput += OnDimMaskClicked;
-        
-        _drawPileView.GuiInput += OnDrawPileClicked;
-        _discardPileView.GuiInput += OnDiscardPileClicked;
-        _exhaustPileView.GuiInput += OnExhaustPileClicked;
         
         _battleUI.PileClicked += OnPileClicked;
         
@@ -179,39 +167,6 @@ public partial class TrainingGroundController : Node
         }
     }
     
-    private void OnDrawPileClicked(InputEvent inputEvent)
-    {
-        if (!_battleManager.IsBattleActive)
-            return;
-            
-        if (inputEvent is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
-        {
-            OnPileClicked("DrawPile");
-        }
-    }
-    
-    private void OnDiscardPileClicked(InputEvent inputEvent)
-    {
-        if (!_battleManager.IsBattleActive)
-            return;
-            
-        if (inputEvent is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
-        {
-            OnPileClicked("DiscardPile");
-        }
-    }
-    
-    private void OnExhaustPileClicked(InputEvent inputEvent)
-    {
-        if (!_battleManager.IsBattleActive)
-            return;
-            
-        if (inputEvent is InputEventMouseButton mouseEvent && mouseEvent.Pressed && mouseEvent.ButtonIndex == MouseButton.Left)
-        {
-            OnPileClicked("ExhaustPile");
-        }
-    }
-    
     private void OnDeckToggle()
     {
         bool isOpen = !_deckFloatingPanel.Visible;
@@ -232,8 +187,9 @@ public partial class TrainingGroundController : Node
         _deckTitleLabel.Text = $"卡包 (共 {_battleManager.Player.Deck.Count} 张)";
         
         _deckMiniCostLabel.Text = "消耗";
-        _deckMiniEffectLabel.Text = "效果";
-        _deckMiniDescLabel.Text = "描述";
+        _deckMiniRuleLabel.Text = "";
+        _deckMiniKeywordLabel.Visible = false;
+        _deckMiniKeywordLabel.Text = "";
         
         foreach (var card in _battleManager.Player.Deck)
         {
@@ -257,44 +213,12 @@ public partial class TrainingGroundController : Node
     {
         if (@event is InputEventMouseButton mouseEvent && mouseEvent.ButtonIndex == MouseButton.Left && mouseEvent.Pressed)
         {
-            string diceText = card.Data.DiceCost > 0 ? card.Data.DiceCost.ToString() : "无需";
-            _deckMiniCostLabel.Text = $"Energy: {card.Data.EnergyCost}  Dice: {diceText}";
-            _deckMiniEffectLabel.Text = card.Data.Description;
-            _deckMiniDescLabel.Text = card.Data.EffectExplanation;
-        }
-    }
-    
-    private string GetEffectText(CardData data)
-    {
-        switch (data.Subtype)
-        {
-            case CardSubtype.Defense:
-                return $"护盾: {data.ShieldValue} / 持续: {data.Duration}回合";
-            case CardSubtype.PositiveBuff:
-                return data.AppliedBuffType.HasValue 
-                    ? $"增益: {data.AppliedBuffType.Value} ({data.EffectAmount}) / 持续: {data.Duration}回合" 
-                    : "效果: 无";
-            case CardSubtype.NegativeBuff:
-                return data.AppliedDebuffType.HasValue 
-                    ? $"减益: {data.AppliedDebuffType.Value} ({data.EffectAmount}) / 持续: {data.Duration}回合" 
-                    : "效果: 无";
-            case CardSubtype.BattleLevelConsumable:
-                return $"消耗品效果: Energy恢复 / 本场剩余: {data.UsesPerBattle}次";
-            case CardSubtype.GameLevelConsumable:
-                return $"消耗品效果: HP恢复 / 全局剩余: {data.MaxUsage}次";
-            case CardSubtype.Equipment:
-                return data.EquipSlot.HasValue 
-                    ? $"装备槽: {data.EquipSlot.Value} / 加成: +{data.EffectAmount} / 持续: {data.Duration}场" 
-                    : "效果: 无";
-            case CardSubtype.Curse:
-                string duration = data.CurseDuration == CurseDurationType.Temporary ? "临时" : "永久";
-                return $"诅咒: {duration} / 负面效果: {data.CurseTrigger} ({data.CurseEffectAmount}/回合) / 概率: {data.CurseDisappearChance * 100}%消失";
-            default:
-                if (data.AppliedBuffType.HasValue)
-                    return $"增益: {data.AppliedBuffType.Value} ({data.EffectAmount})";
-                if (data.AppliedDebuffType.HasValue)
-                    return $"减益: {data.AppliedDebuffType.Value} ({data.EffectAmount})";
-                return "效果: 无";
+            _deckMiniCostLabel.Text = $"消耗：{CardDisplayFormatter.FormatCost(card.Data)}";
+            _deckMiniRuleLabel.Text = CardDisplayFormatter.FormatRuleText(card.Data, card, _battleManager.Player.DiceSides);
+            
+            string keywordText = CardDisplayFormatter.FormatKeywordText(card.Data);
+            _deckMiniKeywordLabel.Visible = !string.IsNullOrEmpty(keywordText);
+            _deckMiniKeywordLabel.Text = keywordText;
         }
     }
     

@@ -353,12 +353,16 @@ size_flags_vertical = 3
 layout_mode = 2
 text = "Energy: 0  Dice: 无需"
 
-[node name="MiniEffectLabel" type="Label" parent="OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox" unique_id=106]
-layout_mode = 2
-text = "效果: 无"
-
-[node name="MiniDescLabel" type="Label" parent="OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox" unique_id=107]
+[node name="MiniRuleLabel" type="Label" parent="OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox" unique_id=106]
 layout_mode = 2
 size_flags_vertical = 3
-text = "无"
+text = ""
 autowrap_mode = 1
+
+[node name="MiniKeywordLabel" type="Label" parent="OverlayLayer/DeckFloatingPanel/DeckVBox/MiniPreviewPanel/MiniPreviewVBox" unique_id=107]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+text = ""
+autowrap_mode = 1
+add_color_override("font_color", Color(0.7, 0.7, 0.9))

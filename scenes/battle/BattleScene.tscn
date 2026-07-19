@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dypck8olfd0i1"]
 
 [ext_resource type="Script" uid="uid://bjjvwfr0bag1l" path="res://scripts/battle/BattleManager.cs" id="1"]
-[ext_resource type="PackedScene" uid="uid://battleui_main" path="res://scenes/ui/BattleUI.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/BattleUI.tscn" id="2"]
 
 [node name="BattleScene" type="Node2D" unique_id=80669665]
 
