@@ -50,12 +50,20 @@ public partial class TrainingGroundController : Node
     private Label _deckMiniRuleLabel;
     private Label _deckMiniKeywordLabel;
     
-    private Control _drawPileBg;
-    private Control _discardPileBg;
-    private Control _exhaustPileBg;
+    private ColorRect _drawPileBg;
+    private ColorRect _discardPileBg;
+    private ColorRect _exhaustPileBg;
     private Label _drawPileCount;
     private Label _discardPileCount;
     private Label _exhaustPileCount;
+    
+    private readonly Color _drawPileColor = new Color(0.898f, 0.784f, 0.0f);
+    private readonly Color _discardPileColor = new Color(0.8f, 0.2f, 0.2f);
+    private readonly Color _exhaustPileColor = new Color(0.2f, 0.667f, 0.267f);
+    
+    private readonly Color _drawPileEmptyColor = new Color(0.541f, 0.478f, 0.267f);
+    private readonly Color _discardPileEmptyColor = new Color(0.533f, 0.267f, 0.267f);
+    private readonly Color _exhaustPileEmptyColor = new Color(0.267f, 0.467f, 0.267f);
     
     private TrainingConfig _config = new TrainingConfig();
     private PackedScene _cardViewScene;
@@ -107,16 +115,20 @@ public partial class TrainingGroundController : Node
         
         _cardViewScene = GD.Load<PackedScene>("res://scenes/card/CardView.tscn");
         
-        _drawPileBg = GetNode<Control>("PileBar/DrawPileView/DrawPileBg");
-        _discardPileBg = GetNode<Control>("PileBar/DiscardPileView/DiscardPileBg");
-        _exhaustPileBg = GetNode<Control>("PileBar/ExhaustPileView/ExhaustPileBg");
-        _drawPileCount = GetNode<Label>("PileBar/DrawPileView/DrawPileCount");
-        _discardPileCount = GetNode<Label>("PileBar/DiscardPileView/DiscardPileCount");
-        _exhaustPileCount = GetNode<Label>("PileBar/ExhaustPileView/ExhaustPileCount");
+        _drawPileBg = GetNode<ColorRect>("PileBar/DrawPilePanel/DrawPileView/DrawPileBg");
+        _discardPileBg = GetNode<ColorRect>("PileBar/DiscardPilePanel/DiscardPileView/DiscardPileBg");
+        _exhaustPileBg = GetNode<ColorRect>("PileBar/ExhaustPilePanel/ExhaustPileView/ExhaustPileBg");
+        _drawPileCount = GetNode<Label>("PileBar/DrawPilePanel/DrawPileView/DrawPileCount");
+        _discardPileCount = GetNode<Label>("PileBar/DiscardPilePanel/DiscardPileView/DiscardPileCount");
+        _exhaustPileCount = GetNode<Label>("PileBar/ExhaustPilePanel/ExhaustPileView/ExhaustPileCount");
         
-        _drawPileBg.GuiInput += (InputEvent e) => OnPileClicked(e, "DrawPile");
-        _discardPileBg.GuiInput += (InputEvent e) => OnPileClicked(e, "DiscardPile");
-        _exhaustPileBg.GuiInput += (InputEvent e) => OnPileClicked(e, "ExhaustPile");
+        var drawPilePanel = GetNode<PanelContainer>("PileBar/DrawPilePanel");
+        var discardPilePanel = GetNode<PanelContainer>("PileBar/DiscardPilePanel");
+        var exhaustPilePanel = GetNode<PanelContainer>("PileBar/ExhaustPilePanel");
+        
+        drawPilePanel.GuiInput += (InputEvent e) => OnPileClicked(e, "DrawPile");
+        discardPilePanel.GuiInput += (InputEvent e) => OnPileClicked(e, "DiscardPile");
+        exhaustPilePanel.GuiInput += (InputEvent e) => OnPileClicked(e, "ExhaustPile");
         
         _playerHpInput.Text = _config.PlayerHp.ToString();
         _playerEnergyInput.Text = _config.PlayerEnergy.ToString();
@@ -198,9 +210,18 @@ public partial class TrainingGroundController : Node
     private void UpdatePileCounts()
     {
         if (_battleManager.Player == null) return;
-        _drawPileCount.Text = _battleManager.Player.DrawPile.Count.ToString();
-        _discardPileCount.Text = _battleManager.Player.DiscardPile.Count.ToString();
-        _exhaustPileCount.Text = _battleManager.Player.ExhaustPile.Count.ToString();
+        
+        int drawCount = _battleManager.Player.DrawPile.Count;
+        int discardCount = _battleManager.Player.DiscardPile.Count;
+        int exhaustCount = _battleManager.Player.ExhaustPile.Count;
+        
+        _drawPileCount.Text = drawCount.ToString();
+        _discardPileCount.Text = discardCount.ToString();
+        _exhaustPileCount.Text = exhaustCount.ToString();
+        
+        _drawPileBg.Color = drawCount == 0 ? _drawPileEmptyColor : _drawPileColor;
+        _discardPileBg.Color = discardCount == 0 ? _discardPileEmptyColor : _discardPileColor;
+        _exhaustPileBg.Color = exhaustCount == 0 ? _exhaustPileEmptyColor : _exhaustPileColor;
     }
     
     private void OnDeckToggle()
